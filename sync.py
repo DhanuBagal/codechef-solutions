@@ -4,27 +4,42 @@ import os
 USERNAME = "dhanashree_b"
 
 url = f"https://www.codechef.com/recent/user?user_handle={USERNAME}"
+
 response = requests.get(url)
+
+if response.status_code != 200:
+    print("Failed to fetch data")
+    exit(1)
+
 data = response.json()
 
 for item in data:
-    if item['status'] == 'Accepted':
-        problem = item['problem_code']
-        solution = item['solution']
-        lang = item['language']
+    try:
+        if item.get('status') == 'Accepted':
+            problem = item.get('problem_code')
+            solution = item.get('solution')
+            lang = item.get('language')
 
-        ext = "txt"
-        if "C++" in lang:
-            ext = "cpp"
-        elif "Python" in lang:
-            ext = "py"
-        elif "Java" in lang:
-            ext = "java"
+            if not solution:
+                continue
 
-        filename = f"{problem}.{ext}"
+            ext = "txt"
+            if "C++" in lang:
+                ext = "cpp"
+            elif "Python" in lang:
+                ext = "py"
+            elif "Java" in lang:
+                ext = "java"
 
-        if not os.path.exists(filename):
-            with open(filename, "w") as f:
-                f.write(solution)
+            filename = f"{problem}.{ext}"
 
-print("Sync done")
+            if not os.path.exists(filename):
+                with open(filename, "w") as f:
+                    f.write(solution)
+
+                print(f"Saved {filename}")
+
+    except Exception as e:
+        print("Error:", e)
+
+print("Sync completed")
