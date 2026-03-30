@@ -20,17 +20,16 @@ jobs:
           python-version: "3.x"
 
       - name: Install dependencies
-        run: |
-          pip install requests
+        run: pip install requests
 
       - name: Run sync script
-        run: |
-          python sync.py
+        run: python sync.py
 
       - name: Commit and Push changes
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
+          git pull --rebase
           git add .
           git diff --cached --quiet || git commit -m "Auto sync CodeChef solutions"
           git push
